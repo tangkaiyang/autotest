@@ -29,3 +29,8 @@ class Appcasestep(models.Model):
     appevelement = models.CharField(max_length=800, verbose_name="控件元素") # 控件元素
     appoptmethod = models.CharField(max_length=200, verbose_name="操作元素") # 操作方法
     apptestdata = models.CharField(max_length=200, null=True, verbose_name="测试数据") # 测试数据,临时增加字段时要设置可为空
+    appassertdata = models.CharField(max_length=200, verbose_name="验证数据") # 验证数据
+    apptestresult = models.BooleanField(verbose_name="测试结果") # 测试结果
+    create_time = models.DateTimeField(auto_now=True, verbose_name="创建时间") # 创建时间,自动获取当前时间
+    def __str__(self):
+        return self.appteststep

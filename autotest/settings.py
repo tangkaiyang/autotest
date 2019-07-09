@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'product',
     'bug',
     'set',
+    'apptest',
+    'webtest',
     'bootstrap4',
 ]
 

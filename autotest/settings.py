@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apitest',
     'product',
+    'bug',
+    'set',
     'bootstrap4',
 ]
 

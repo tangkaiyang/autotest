@@ -20,31 +20,32 @@
     </ul>
 </div>
 </nav>
-
 <!-- 产品列表-->
-<div class="row" style="padding-top: 20px;">
-    <div class="col-md-ll">
-        <table class="table table-striped">
-            <thead>
-            <tr><td>&nbsp;</td></tr>
-            <tr><th>ID</th></tr>
-            <tr><th>产品名称</th></tr>
-            <tr><th>产品描述</th></tr>
-            <tr><th>产品负责人</th></tr>
-            <tr><th>创建时间</th></tr>
-            </thead>
-            <tbody>
-            {% for product in products %}
-            <tr>
-                <td>{{ product.id }}</td>
-                <td>{{ product.productname }}</td>
-                <td>{{ product.productdesc }}</td>
-                <td>{{ product.producter }}</td>
-                <td>{{ product.create_time }}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+<div class="container">
+    <div class="row" style="padding-top: 20px;">
+        <div class="col-md-ll">
+            <table class="table table-striped">
+                <thead>
+                <tr><td>&nbsp;</td></tr>
+                <th>ID</th>
+                <th>产品名称</th>
+                <th>产品描述</th>
+                <th>产品负责人</th>
+                <th>创建时间</th>
+                </thead>
+                <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.id }}</td>
+                    <td>{{ product.productname }}</td>
+                    <td>{{ product.productdesc }}</td>
+                    <td>{{ product.producter }}</td>
+                    <td>{{ product.created_time }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

@@ -73,7 +73,7 @@ def test_report(request):
     apis_count = Apis.objects.all().count()  # 统计接口数
     db = pymysql.connect(user='root', db='autotest', passwd='root', host='127.0.0.1', port=3306)
     cursor = db.cursor()
-    sql1 = 'SELECT count(id) FROM apitest_apis WHERE apitest_apis.apiststatus=1'
+    sql1 = 'SELECT count(id) FROM apitest_apis WHERE apitest_apis.apistatus=1'
     aa = cursor.execute(sql1)
     apis_pass_count = [row[0] for row in cursor.fetchmany(aa)][0]
     sql2 = 'SELECT count(id) FROM apitest_apis WHERE apitest_apis.apistatus=0'

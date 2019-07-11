@@ -6,9 +6,12 @@
 # @File     : apiauto_testcase3.py
 # @Software : PyCharm
 
-import requests, time, sys, re
+import requests, time, sys, re, os
 import urllib, zlib
 import pymysql
+
+import HTMLTestRunner
+import unittest
 from trace import CoverageResults
 import json
 from idlelib.rpc import response_queue
@@ -17,20 +20,29 @@ from time import sleep
 HOSTNAME = '127.0.0.1'
 
 
-def readSQLcase():  # 读取数据库中响应的接口用例数据
-    sql = "SELECT `id`, `apiname`, `apiurl`, `apimethod`, `apiparamvalue`, `apiresult`, `apistatus` from apitest_apistep where apitest_apistep.Apitest_id = 3;"
-    conn = pymysql.connect(user='root', passwd='root', db='autotest', port=3306, host='127.0.0.1', charset='utf8')
-    cursor = conn.cursor()
-    aa = cursor.execute(sql)
-    info = cursor.fetchmany(aa)
-    for ii in info:
-        case_list = []
-        case_list.append(ii)
-        # CredentialId()
-        interfaceTest(case_list)
-    conn.commit()
-    cursor.close()
-    conn.close()
+class ApiFlow(unittest.TestCase):
+    """登录支付购物接口流程"""
+
+    def setUp(self):
+        time.sleep(1)
+
+    def test_readSQLcase(self):  # 读取数据库中响应的接口用例数据
+        sql = "SELECT `id`, `apiname`, `apiurl`, `apimethod`, `apiparamvalue`, `apiresult`, `apiteststatus` from apitest_apistep where apitest_apistep.Apitest_id = 3;"
+        conn = pymysql.connect(user='root', passwd='root', db='autotest', port=3306, host='127.0.0.1', charset='utf8')
+        cursor = conn.cursor()
+        aa = cursor.execute(sql)
+        info = cursor.fetchmany(aa)
+        for ii in info:
+            case_list = []
+            case_list.append(ii)
+            # CredentialId()
+            interfaceTest(case_list)
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        def tearDown(self) -> None:
+            time.sleep(1)
 
 
 def interfaceTest(case_list):
@@ -69,7 +81,8 @@ def interfaceTest(case_list):
             if '=' in urlParam(param):
                 data = None
                 print(
-                    str(case_id) + ' request is get ' + new_url.encode('utf-8') + '?' + urlParam(param).encode('utf-8'))
+                    str(case_id) + ' request is get ' + new_url.encode('utf-8') + '?' + urlParam(param).encode(
+                        'utf-8'))
                 results = requests.get(new_url + '?' + urlParam(param), data, headers=headers).text
                 print('response is get' + results.encode('utf-8'))
                 responses.append(results)
@@ -139,7 +152,7 @@ def interfaceTest(case_list):
                 results = requests.post(new_url, data=urlParam(param).encode('utf-8'), headers=headers).text
                 print('response is post' + results.encode('utf-8'))
                 responses.append(results)
-                res = readRes(resultls, res_check)
+                res = readRes(results, res_check)
             if res == 'pass':
                 writeResult(case_id, '1')
                 res_flags.append('pass')
@@ -179,3 +192,75 @@ def CredentialId():
     regx = '.*"CredentialId":"(.*)","Scene"'
     pm = re.search(regx, data)
     id = pm.group(1)
+
+
+def preOrderSN(results):
+    global preOrderSN
+    regx = ',*"preOrderSN":"(,*)","toHome"'
+    pm = re.search(regx, results)
+    if pm:
+        preOrderSN = pm.group(1).encode('utf-8')
+        return preOrderSN
+    return False
+
+
+def TaskId(results):
+    global TaskId
+    regx = '.*"TaskId":(,*),"PlanId"'
+    pm = re.search(regx, results)
+    if pm:
+        TaskId = pm.group(1).encode('utf-8')
+        return TaskId
+    return False
+
+
+def taskno(param):
+    global taskno
+    a = int(time.time())
+    taskno = 'task_' + str(a)
+    return taskno
+
+
+def writeResult(case_id, result):
+    result = result.encode('utf-8')
+    now = time.strftime("%Y-%m-%d %H:%M:%S")
+    sql = "UPDATE apitest_apistep set apitest_apistep.apistatus=%s where apitest_apistep.Apitest_id=%s;"
+    param = (result, case_id)
+    print('api autotest result is' + result.decode())
+    coon = pymysql.connect(user='root', passwd='root', db='autotest', port=3306, host='127.0.0.1', charset='utf8')
+    cursor = coon.cursor()
+    cursor.execute(sql)
+    coon.commit()
+    cursor.close()
+    coon.close()
+
+
+def writeBug(bug_id, interface_name, request, response, res_check):
+    interface_name = interface_name.encode('utf-8')
+    res_check = res_check.encode('utf-8')
+    request = request.encode('utf-8')
+    now = time.strftime('%Y-%m-%d %H:%M:%S')
+    bugname = str(bug_id) + '_' + interface_name.decode() + '_出错了'
+    bugdetail = '[请求数据]<br/>' + request.decode() + '<br/>' + '[预期结果]<br/>' + res_check.decode() + '<br/>' + '<br/>' + '[响应数据]<br/>' + '<br/>' + response.decode()
+    print(bugdetail)
+    sql = "INSERT INTO `bug_bug` (`bugname`, `bugdetail`, `bugstatus`, `buglevel`, `bugcreater`, `bugassign`, `created_time`, `Product_id`) VALUES ('%s', '%s', '1', '1', 'tangky', 'tangky', '%s', '2');" % (
+        bugname, pymysql.escape_string(bugdetail), now)
+    coon = pymysql.connect(user='root', passwd='root', db='autotest', port=3306, host='127.0.0.1', charset='utf8')
+    cursor = coon.cursor()
+    cursor.execute(sql)
+    coon.commit()
+    cursor.close()
+    coon.close()
+
+
+if __name__ == '__main__':
+    now = time.strftime("%Y-%m-%d-%H_%M_%S", time.localtime(time.time()))
+    testunit = unittest.TestSuite()
+    testunit.addTest(ApiFlow("test_readSQLcase"))
+    filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), r'templates\report.html')
+    # import os
+    # basedir = os.path.dirname(os.path.abspath(__file__))
+    # print(os.path.join(basedir, r'templates\apitest_report.html'))
+    fp = open(filename, 'wb')
+    runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title=u'流程接口测试报告', description=u"流程场景接口")
+    runner.run(testunit)

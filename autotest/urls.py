@@ -41,9 +41,11 @@ urlpatterns = [
     path('test_report/', views.test_report),
     path('apptest_report/', appviews.apptest_report),
     path('webtest_report/', webviews.webtest_report),
-    path('setsearch/', setviews.setsearch),
+    path('usersearch/', setviews.usersearch),
     path('productsearch/', proviews.productsearch),
     path('bugsearch/', bugviews.bugsearch),
     path('appsearch/', appviews.appsearch),
     path('appstepsearch/', appviews.appstepsearch),
+    path('websearch/', webviews.websearch),
+    path('webstepsearch/', webviews.webstepsearch),
 ]

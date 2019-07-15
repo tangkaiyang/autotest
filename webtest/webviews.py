@@ -29,3 +29,19 @@ def webcasestep_manage(request):
 def webtest_report(request):
     username = request.session.get('user', '')
     return render(request, "webtest_report.html")
+
+# 搜索
+@login_required
+def websearch(request):
+    username = request.session.get('user', '')
+    search_webcasename = request.GET.get('webcasename', '')
+    webcase_list = Webcase.objects.filter(webcasename__icontains=search_webcasename)
+    return render(request, 'webcase_manage.html', {"user": username, "webcases": webcase_list})
+
+# 搜索
+@login_required
+def webstepsearch(request):
+    username = request.session.get('user', '')
+    search_webcasename = request.GET.get('webcasename', '')
+    webcasestep_list = Webcase.objects.filter(webcasename__icontains=search_webcasename)
+    return render(request, 'webcasestep_manage.html', {"user": username, "webcasesteps": webcasestep_list})

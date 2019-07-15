@@ -22,3 +22,10 @@ def webcasestep_manage(request):
     username = request.session.get('user', '')
     webcasestep_list = Webcasestep.objects.all()
     return render(request, "webcasestep_manage.html", {"user": username, "webcasesteps": webcasestep_list})
+
+
+# web测试报告
+@login_required
+def webtest_report(request):
+    username = request.session.get('user', '')
+    return render(request, "webtest_report.html")

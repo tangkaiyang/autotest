@@ -22,6 +22,14 @@
     </div>
   </div>
 </nav>
+<!-- 搜索栏-->
+<div class="page-header" style="padding-top: 70px;">
+  <form class="navbar-form" method="get" action="/apissearch/">
+    {% csrf_token %}
+    <input type="search" name="apiname" placeholder="名称" required>
+    <button type="submit">搜索</button>
+  </form>
+</div>
 <!-- 单一接口测试用例-->
 <div class="row" style="padding-top: 20px;">
   <div class="col-md-11">

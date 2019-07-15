@@ -83,3 +83,11 @@ def test_report(request):
     return render(request, "report.html",
                   {"user": username, "apiss": apis_list, "apiscounts": apis_count, "apis_pass_counts": apis_pass_count,
                    "apis_fail_counts": apis_fail_count})  # 把值赋给apiscounts变量
+
+# 搜索
+@login_required
+def apissearch(request):
+    username = request.session.get('user', '')
+    search_apiname = request.GET.get('apiname', '')
+    apis_list = Apis.objects.filter(setname__icontains=search_apiname)
+    return render(request, 'apis_manage.html', {"user": username, "apiss": apis_list})
